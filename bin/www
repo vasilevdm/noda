@@ -3,7 +3,7 @@
 /**
  * Module dependencies.
  */
-
+var test = '';
 var app = require('../app');
 var debug = require('debug')('noda:server');
 var http = require('http');
