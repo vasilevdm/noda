@@ -3,13 +3,56 @@
 /**
  * Module dependencies.
  */
-var http = require('http');
-var server = http.createServer(function(req,res){
-  res.writeHead(200, {'Content-Type': 'text/html'});
-  res.end('Hello world!!');
+var express = require('express')
+var app = express()
+var bodyparser = require('body-parser')
+var stylus = require('stylus')
+var path = require('path')
+
+app.use(bodyparser.urlencoded({extended: false}))
+app.use(express.static(path.join(__dirname,'views')))
+app.use(stylus.middleware(path.join(__dirname),'public'))
+
+app.set('view engine', 'pug')
+
+var port = normalizePort(process.env.PORT || '3000')
+app.listen(3000)
+
+app.get('/',  function(req,res){
+  res.send('<h1>Home</h1><p>Hello world!</p>' +
+      '<ul><li><a href="/">Home</a></li><li><a href="/about">About</a></li><li><a href="/contact">Contact</a></li></ul>')
+  res.render('index')
 })
-var port = normalizePort(process.env.PORT || '3000');
-server.listen(port);
+
+app.get('/about', function(req,res) {
+    res.send('<h1>About</h1><p>Nodejs + express project</p>' +
+        '<ul><li><a href="/">Home</a></li><li><a href="/about">About</a></li><li><a href="/contact">Contact</a></li></ul>')
+})
+
+app.route('/contact').get(function(req,res,next) {
+  //for get
+  res.send('<h1>Contact</h1><p>Request form</p>' +
+        '<ul><li><a href="/">Home</a></li><li><a href="/about">About</a></li><li><a href="/contact">Contact</a></li></ul>' +
+        '<form method="post"><label>Name</label><input value="" name="name" placeholder="ivan"><br><label>Text</label><textarea name="text" placeholder="some text..."></textarea><br><input type="submit"></form>')
+}).post(function(req,res,next) {
+  //for post
+  var post = req.body;
+  res.send('<h1>Contact</h1><p>Request form</p>' +
+        '<ul><li><a href="/">Home</a></li><li><a href="/about">About</a></li><li><a href="/contact">Contact</a></li></ul>' +
+        '<form method="post"><label>Name</label><input value="" name="name" placeholder="ivan"><br><label>Text</label><textarea name="text" placeholder="some text..."></textarea><br><input type="submit"></form>' +
+        '<br>Name: '+post.name+'<br>Text: '+post.text);
+ // res.end('post')
+})
+
+
+
+// var http = require('http');
+// var server = http.createServer(function(req,res){
+//   res.writeHead(200, {'Content-Type': 'text/html'});
+//   res.end('Hello world!!');
+// })
+// var port = normalizePort(process.env.PORT || '3000');
+// server.listen(port);
 
 function normalizePort(val) {
   var port = parseInt(val, 10);
