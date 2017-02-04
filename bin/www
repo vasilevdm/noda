@@ -9,20 +9,25 @@ var bodyparser = require('body-parser')
 var stylus = require('stylus')
 var path = require('path')
 
+//db
+var mongo = require('mongodb').MongoClient
+var db = 'mongodb://admin:Tambov6966@ds036709.mlab.com:36709/ztaskazure'
+var contacts_col = 'contacts'
+
 app.use(bodyparser.urlencoded({extended: false}))
 app.use(express.static(path.join(__dirname,'views')))
 app.use(stylus.middleware(path.join(__dirname),'public'))
 
-app.set('view engine', 'pug')
+// app.set('view engine', 'jade')
 
 
 var port = normalizePort(process.env.PORT || '3000')
-app.listen(3000)
+app.listen(port)
 
 app.get('/',  function(req,res){
   res.send('<h1>Home</h1><p>Hello world!</p>' +
       '<ul><li><a href="/">Home</a></li><li><a href="/about">About</a></li><li><a href="/contact">Contact</a></li></ul>')
-  res.render('index')
+  // res.render('index')
 })
 
 app.get('/about', function(req,res) {
@@ -32,12 +37,41 @@ app.get('/about', function(req,res) {
 
 app.route('/contact').get(function(req,res,next) {
   //for get
-  res.send('<h1>Contact</h1><p>Request form</p>' +
-        '<ul><li><a href="/">Home</a></li><li><a href="/about">About</a></li><li><a href="/contact">Contact</a></li></ul>' +
-        '<form method="post"><label>Name</label><input value="" name="name" placeholder="ivan"><br><label>Text</label><textarea name="text" placeholder="some text..."></textarea><br><input type="submit"></form>')
+  var res_text = '';
+  mongo.connect(db, function (err,db) {
+      db.collection(contacts_col).find({}).toArray(function (err,dbres) {
+          if(err) throw err
+          // console.log(res)
+          // if(res.length) {
+              dbres.forEach(function (obj) {
+                  res_text += '<div>name: ' + obj.name + ' text: ' + obj.text + '</div><br>'
+              })
+              // res.send(res_text)
+          // }
+          db.close()
+          res.send('<h1>Contact</h1><p>Request form</p>' +
+              '<ul><li><a href="/">Home</a></li><li><a href="/about">About</a></li><li><a href="/contact">Contact</a></li></ul>' +
+              '<form method="post"><label>Name</label><input value="" name="name" placeholder="ivan"><br><label>Text</label><textarea name="text" placeholder="some text..."></textarea><br><input type="submit"></form>'+res_text)
+      })
+  })
 }).post(function(req,res,next) {
   //for post
   var post = req.body;
+  mongo.connect(db, function(err,db){
+      if(err) throw err
+      if(post.name && post.text) {
+          var collection = db.collection(contacts_col)
+          collection.insert({
+              name: post.name,
+              text: post.text
+          },function(err,dbres){
+              if(err) throw err
+              db.close()
+              //res.send('posted<br>')
+          })
+      }
+      db.close()
+  })
   res.send('<h1>Contact</h1><p>Request form</p>' +
         '<ul><li><a href="/">Home</a></li><li><a href="/about">About</a></li><li><a href="/contact">Contact</a></li></ul>' +
         '<form method="post"><label>Name</label><input value="" name="name" placeholder="ivan"><br><label>Text</label><textarea name="text" placeholder="some text..."></textarea><br><input type="submit"></form>' +
