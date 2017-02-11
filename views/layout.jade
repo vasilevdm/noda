@@ -1,13 +1,17 @@
 doctype html
 html
   head
-    title= title
+    title= h1
     link(rel='stylesheet', href='/stylesheets/style.css')
   body
     nav
-      a(herf="#") Home
-      a(herf="#") About
-      a(herf="#") Contacts
+      a(href="/") Home
+      a(href="/about") About
+      a(href="/contact") Contacts
+
+    .general
+      h1= h1
+      p #{text}
 
     .content
       block content

@@ -18,21 +18,18 @@ app.use(bodyparser.urlencoded({extended: false}))
 app.use(express.static(path.join(__dirname,'views')))
 app.use(stylus.middleware(path.join(__dirname),'public'))
 
-// app.set('view engine', 'jade')
+app.set('view engine', 'jade')
 
 
 var port = normalizePort(process.env.PORT || '3000')
 app.listen(port)
 
-app.get('/',  function(req,res){
-  res.send('<h1>Home</h1><p>Hello world!</p>' +
-      '<ul><li><a href="/">Home</a></li><li><a href="/about">About</a></li><li><a href="/contact">Contact</a></li></ul>')
-  // res.render('index')
+app.get('/', function(req,res){
+  res.render('index', {h1: 'Home', text: 'Hello world!'})
 })
 
 app.get('/about', function(req,res) {
-    res.send('<h1>About</h1><p>Nodejs + express project</p>' +
-        '<ul><li><a href="/">Home</a></li><li><a href="/about">About</a></li><li><a href="/contact">Contact</a></li></ul>')
+    res.render('index', {h1: 'About', text: 'Nodejs + express project'})
 })
 
 app.route('/contact').get(function(req,res,next) {
@@ -49,9 +46,10 @@ app.route('/contact').get(function(req,res,next) {
               // res.send(res_text)
           // }
           db.close()
-          res.send('<h1>Contact</h1><p>Request form</p>' +
+          res.render('contact', {h1: 'Contact', text: 'Request form', requests: res_text})
+          /*res.send('<h1>Contact</h1><p>Request form</p>' +
               '<ul><li><a href="/">Home</a></li><li><a href="/about">About</a></li><li><a href="/contact">Contact</a></li></ul>' +
-              '<form method="post"><label>Name</label><input value="" name="name" placeholder="ivan"><br><label>Text</label><textarea name="text" placeholder="some text..."></textarea><br><input type="submit"></form>'+res_text)
+              '<form method="post"><label>Name</label><input value="" name="name" placeholder="ivan"><br><label>Text</label><textarea name="text" placeholder="some text..."></textarea><br><input type="submit"></form>'+res_text)*/
       })
   })
 }).post(function(req,res,next) {
