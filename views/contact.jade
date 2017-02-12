@@ -1,13 +1,15 @@
 extends layout
 
 block content
-  form
+  form(method="post")
     label Name
-    input
+    input(name="name", placeholder="ivan")
     br
     label Text
-    textarea
+    textarea(name="text", placeholder="some text...")
     br
-    submit
+    input(type="submit")
 
-  #{requests}
+  div.requests
+    each request in requests
+        div= request.name + ' : ' + request.text
