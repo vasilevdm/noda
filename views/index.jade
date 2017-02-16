@@ -1,3 +1,8 @@
 extends layout
 
 block content
+    if data
+        div #{data.text}
+
+    <script src="//ulogin.ru/js/ulogin.js"></script>
+    <div id="uLogin" data-ulogin="display=panel;theme=flat;fields=first_name,last_name,email;providers=google;hidden=;redirect_uri=http%3A%2F%2Flocalhost%3A3000%2F;mobilebuttons=0;"></div>

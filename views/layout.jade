@@ -8,6 +8,9 @@ html
       a(href="/") Home
       a(href="/about") About
       a(href="/contact") Contacts
+      a(href="/user") User
+      if loggedIn
+        a(href="/hidden") Hidden
 
     .general
       h1= h1
