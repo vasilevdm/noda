@@ -1,0 +1,49 @@
+body {
+  padding: 10px 50px;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  max-width: 640px;
+  margin: 0 auto;
+}
+a {
+  color: #00b7ff;
+}
+.general {
+  text-align: center;
+  padding: 10px 20px;
+  border-radius: 3px;
+  border: 1px solid #8fbc8f;
+  margin: 0 0 10px;
+}
+.general h1 {
+  margin: 5px 0 10px;
+  font-size: 200%;
+  line-height: 1;
+}
+.general p {
+  margin: 5px 0 10px;
+  font-size: 100%;
+}
+.content {
+  text-align: center;
+  padding: 10px 20px;
+  border-radius: 3px;
+  border: 1px solid #bc5347;
+}
+nav {
+  text-align: center;
+}
+nav a {
+  display: inline-block;
+  line-height: 1;
+  padding: 10px 20px;
+  text-decoration: none;
+  border: 1px solid #00b7ff;
+  border-radius: 3px;
+  margin: 10px 10px;
+  transition: all ease 0.05s;
+  cursor: pointer;
+}
+nav a:hover {
+  background: #00b7ff;
+  color: #fff;
+}

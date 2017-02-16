@@ -1,0 +1,15 @@
+extends layout
+
+block content
+  form(method="post")
+    label Name
+    input(name="name", placeholder="ivan")
+    br
+    label Text
+    textarea(name="text", placeholder="some text...")
+    br
+    input(type="submit")
+
+  div.requests
+    each request in requests
+        div= request.name + ' : ' + request.text
