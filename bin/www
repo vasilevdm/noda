@@ -179,20 +179,33 @@ app.route('/user/logout').get(function(req, res, next) {
 
 /* GET userhome page. */
 app.get('/user', function(req, res, next) {
-    if(req.session.user){
-        var data = {
-            h1: 'User',
-            user : req.session.user,
-            loggedIn : (req.session.user) ? true : false
-        }
-        res.render('user', data)
-    } else {
-        var data = {
-            h1: 'User',
-            loggedIn : (req.session.user) ? true : false
-        }
-        res.render('user', data)
-    }
+    var userlist = '';
+    mongo.connect(db, function(err,db){
+        if(err) throw err
+        db.collection('users').find({}).toArray(function (err,dbres) {
+            if(err) throw err
+            db.close()
+            dbres.forEach(function(item){
+                userlist = userlist+' '+item.name+':'+item.email
+            })
+            if(req.session.user){
+                var data = {
+                    h1: 'User',
+                    user : req.session.user,
+                    loggedIn : (req.session.user) ? true : false,
+                    list: userlist
+                }
+                res.render('user', data)
+            } else {
+                var data = {
+                    h1: 'User',
+                    loggedIn : (req.session.user) ? true : false,
+                    list: userlist
+                }
+                res.render('user', data)
+            }
+        })
+    })
 })
 
 
