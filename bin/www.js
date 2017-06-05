@@ -25,7 +25,16 @@ var MongoStore = require('connect-mongo')(session);
 var api = require('../api.js')
 
 //requests //file_get_contents
-var request = require('request');
+var request = require('request')
+//iconv // convert encoding
+var iconv = require('iconv-lite')
+//needle a request analog
+var needle = require('needle')
+//tress async multi file_get_contents
+var tress = require('tress')
+var cheerio = require('cheerio')
+var resolve = require('url').resolve
+var fs = require('fs')
 
 app.use(bodyparser.urlencoded({extended: false}))
 app.use(stylus.middleware(path.join(__dirname,'../public')))
@@ -220,6 +229,55 @@ app.get('/hidden', function(req, res, next) {
         var data = {}
         res.status(403).render('index', {h1: 'Hidden place', text: 'For authorized only', loggedIn: (req.session.user) ? true : false, data: data})
     }
+})
+
+//parser
+app.get('/parser', function (req, res, next) {
+    var URL = 'https://www.ferra.ru/ru/techlife/news/'
+    var results = []
+    // `tress` последовательно вызывает наш обработчик для каждой ссылки в очереди
+    var q = tress(function(url, callback){
+        //тут мы обрабатываем страницу с адресом url
+        needle.get(url, function(err, res) {
+            if(err) throw err
+            // парсим DOM
+            var $ = cheerio.load(res.body)
+            //информация о новости
+            if($('.topic-about__date').length>0){
+                results.push({
+                    title: $('h1').text(),
+                    date: $('.topic-about__date').text(),
+                    href: url,
+                    size: $('.topic-body').text().length
+                })
+            }
+            //список новостей
+            $('.newslist__item').each(function(){
+                q.push('https:'+$(this).find('div>a').attr('href'))
+            })
+            //паджинатор
+            /*$('.bpr_next>a').each(function() {
+                // не забываем привести относительный адрес ссылки к абсолютному
+                q.push(resolve(URL, $(this).attr('href')))
+            })*/
+            callback() //вызываем callback в конце
+        })
+    }, 5)
+    // эта функция выполнится, когда в очереди закончатся ссылки
+    q.drain = function () {
+        require('fs').writeFileSync('./data.json', JSON.stringify(results, null, 4))
+        var loggedIn = (req.session.user) ? true : false
+        var text = '';
+        results.forEach(function(obj){
+            text+= 'title: '+obj.title+' || '
+            text+= 'date: '+obj.date+' || '
+            text+= 'href: '+obj.href+' || '
+            text+= 'size: '+obj.size+' || '
+        })
+        res.render('index', {h1: 'Parser test', text: text, loggedIn: loggedIn})
+    }
+    // добавляем в очередь ссылку на первую страницу списка
+    q.push(URL)
 })
 
 
